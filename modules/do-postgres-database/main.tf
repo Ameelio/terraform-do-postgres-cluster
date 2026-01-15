@@ -22,7 +22,7 @@ resource "kubernetes_secret" "app_user" {
   type = "Opaque"
   data = {
     # Most web apps look for DATABASE_URL in their environments.
-    "DATABASE_URL" = "postgres://${digitalocean_database_user.app_user.name}:${digitalocean_database_user.app_user.password}@${var.cluster_host}:${var.cluster_port}/${digitalocean_database_db.db.name}"
+    "DATABASE_URL" = "postgres://${digitalocean_database_user.app_user.name}:${digitalocean_database_user.app_user.password}@${var.cluster_host}:${var.cluster_port}/${digitalocean_database_db.db.name}?connect_timeout=5&sslmode=require"
 
     # psql can use these environment variables.
     "PGDATABASE" = "${digitalocean_database_db.db.name}"
