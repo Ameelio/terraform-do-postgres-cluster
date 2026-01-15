@@ -22,23 +22,35 @@ variable "cpus" {
   default     = 2
 }
 
-variable "db_name" {
-  description = "Optional override of the generated database name (default is the value of app)"
-  type        = string
-  default     = null
-  nullable    = true
+variable "databases" {
+  description = <<EOT
+    A map of pg_clusters, the key should be
+    a unique string, recommend matching the cluster
+    version.
+    The value is an object:
+    {
+      enable_re-plication: Set to true to generate replication user secrets.
+      instance: Instance to label the secret manifests, defaults to the database name.
+      k8s_prefix: Prefix for secret manifest names, defaults to the database username.
+      name: Name of the database.
+      username: Name of the database owner, defaults to the database name.
+    }
+  EOT
+
+  type = map(object({
+    enable_replication = optional(bool, false)
+    instance = optional(string, null)
+    k8s_prefix = optional(string, null)
+    name = string
+    username = optional(string, null)
+  }))
+
+  default   = null
+  nullable  = true
 }
 
-variable "db_username" {
-  description = "Optional override of the generated database username (default is the value of app)"
-  type        = string
-  default     = null
-  nullable    = true
-}
-
-
-variable "facility" {
-  description = "Name of the facility (ex. staging, techgoeshome)"
+variable "instance" {
+  description = "Name of the instance (ex. staging, techgoeshome)"
   type        = string
 }
 
@@ -72,6 +84,12 @@ variable "pg_version" {
   description = "Version of Postgres to use.  Ex: 12, 11, 10, 9.6"
   type        = string
   default     = "17"
+}
+
+variable "tier" {
+  description = "Tier size of the postgres node. Ex: 's'"
+  type        = string
+  default     = "s"
 }
 
 variable "vpc" {
